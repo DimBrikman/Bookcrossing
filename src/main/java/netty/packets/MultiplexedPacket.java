@@ -13,6 +13,10 @@ public class MultiplexedPacket implements Packet {
         this.packets.addAll(Arrays.asList(packets));
     }
 
+    public void append(Packet packet) {
+        packets.add(packet);
+    }
+
     public List<Packet> packets() {
         return packets;
     }

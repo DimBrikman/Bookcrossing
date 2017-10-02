@@ -3,7 +3,7 @@ package netty.client.tasks;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import netty.Console;
-import netty.packets.AuthPacket;
+import netty.packets.AuthRequestPacket;
 
 import java.io.IOException;
 
@@ -16,9 +16,7 @@ public class ClientAuthTask implements ClientTask {
             Console.print("pass: ");
             String pass = Console.readLine();
 
-            AuthPacket packet = new AuthPacket();
-            packet.setRequest(new AuthPacket.AuthRequest(login, pass));
-
+            AuthRequestPacket packet = new AuthRequestPacket(login, pass);
             context.writeAndFlush(packet, promise);
         } catch (IOException e) {
             Console.println("<AUTH REQ> ERROR: " + e.getMessage());

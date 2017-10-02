@@ -1,10 +1,7 @@
 package netty.packets;
 
 public class MessagePacket implements Packet {
-    private String message;
-
-    public MessagePacket() {
-    }
+    private final String message;
 
     public MessagePacket(String message) {
         this.message = message;
@@ -12,9 +9,5 @@ public class MessagePacket implements Packet {
 
     public String getMessage() {
         return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }

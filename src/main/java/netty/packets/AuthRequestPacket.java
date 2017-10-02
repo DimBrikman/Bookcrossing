@@ -1,8 +1,8 @@
 package netty.packets;
 
 public class AuthRequestPacket implements Packet {
-    private String login;
-    private String password;
+    private final String login;
+    private final String password;
 
     public AuthRequestPacket(String login, String password) {
         this.login = login;
@@ -12,7 +12,6 @@ public class AuthRequestPacket implements Packet {
     public String getLogin() {
         return login;
     }
-
     public String getPassword() {
         return password;
     }

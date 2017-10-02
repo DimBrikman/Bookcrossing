@@ -4,8 +4,8 @@ package netty.packets;
 import java.io.Serializable;
 
 public class StatusResponse implements Serializable {
-    private boolean status;
-    private String  message;
+    private final boolean status;
+    private final String  message;
 
     public StatusResponse(boolean status, String message) {
         this.status = status;
@@ -15,7 +15,6 @@ public class StatusResponse implements Serializable {
     public boolean isSuccess() {
         return status;
     }
-
     public String getMessage() {
         return message;
     }

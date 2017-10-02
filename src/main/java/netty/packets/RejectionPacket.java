@@ -1,11 +1,11 @@
 package netty.packets;
 
 public class RejectionPacket implements Packet {
-    private String message;
+    private final String message;
 
     public RejectionPacket() {
+        message = null;
     }
-
     public RejectionPacket(String message) {
         this.message = message;
     }

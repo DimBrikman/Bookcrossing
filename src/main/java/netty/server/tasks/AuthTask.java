@@ -25,7 +25,7 @@ public class AuthTask extends ServerTask {
     @Override
     public void onSuccess() {
         Console.println("<AUTH TASK> SUCCESS");
-        context.writeAndFlush(new AuthResponsePacket(true, request));
+        context.writeAndFlush(new AuthResponsePacket(true, "auth success"));
         context.pipeline().addLast(new ServerHandler());
         context.pipeline().remove("AuthHandler");
     }
@@ -33,7 +33,7 @@ public class AuthTask extends ServerTask {
     @Override
     public void onFailure() {
         Console.println("<AUTH TASK> FAILED");
-        context.writeAndFlush(new AuthResponsePacket(false, request, "incorrect login or password"));
+        context.writeAndFlush(new AuthResponsePacket(false, "incorrect login or password"));
     }
 
     @Override

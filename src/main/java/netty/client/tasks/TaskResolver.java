@@ -1,7 +1,6 @@
 package netty.client.tasks;
 
 import netty.Console;
-import netty.client.tasks.*;
 
 import java.util.HashMap;
 

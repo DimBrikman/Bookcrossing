@@ -24,7 +24,7 @@ public class RegistrationTask extends ServerTask {
     @Override
     public void onSuccess() {
         Console.println("<REGISTR TASK> SUCCESS");
-        context.writeAndFlush(new RegistrationResponsePacket(true, request));
+        context.writeAndFlush(new RegistrationResponsePacket(true, "registration success"));
         context.pipeline().addLast(new ServerHandler());
         context.pipeline().remove("AuthHandler");
     }
@@ -32,7 +32,7 @@ public class RegistrationTask extends ServerTask {
     @Override
     public void onFailure() {
         Console.println("<REGISTR TASK> FAILED");
-        context.writeAndFlush(new RegistrationResponsePacket(false, request, "login already exists"));
+        context.writeAndFlush(new RegistrationResponsePacket(false, "login already exists"));
     }
 
     @Override

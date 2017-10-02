@@ -1,50 +1,48 @@
 package netty.server.tasks;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import netty.packets.Packet;
 import netty.packets.RejectionPacket;
 
+import java.util.Objects;
 
-public abstract class ServerTask implements Runnable {
+
+public abstract class ServerTask<T extends Packet> implements Runnable {
     protected ChannelHandlerContext context;
+    protected T request;
 
-    public ServerTask(ChannelHandlerContext context) {
+    public void setContext(T request, ChannelHandlerContext context) {
+        this.request = request;
         this.context = context;
     }
 
-    public ChannelHandlerContext getContext() {
-        return context;
+    public Channel getChannel() {
+        return context.channel();
     }
 
     @Override
-    public void run() {
+    public final void run() {
+        if (context == null || request == null)
+            throw new NullPointerException();
         try {
-            if (process()) {
-                onSuccess();
-            } else {
-                onFailure();
-            }
+            process();
         } catch (Throwable t) {
             onException(t);
+        } finally {
+            request = null;
+            context = null;
         }
     }
 
-    public abstract boolean process();
+    public abstract void process();
 
-    public abstract void onSuccess();
-
-    public abstract void onFailure();
-
-    public abstract void onException(Throwable e);
+    public abstract void onException(Throwable t);
 
     public ChannelFuture reject(String reason) {
         return context.writeAndFlush(new RejectionPacket(reason));
-    }
-
-    public void rejectAndClose(String reason) {
-        ChannelFuture future = reject(reason);
-        future.addListener(ChannelFutureListener.CLOSE);
     }
 
     @Deprecated

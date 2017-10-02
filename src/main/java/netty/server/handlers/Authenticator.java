@@ -6,17 +6,16 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import netty.Console;
 import netty.packets.AuthRequestPacket;
+import netty.packets.Packet;
 import netty.packets.RegistrationRequestPacket;
 import netty.packets.RejectionPacket;
-import netty.server.tasks.AuthTask;
-import netty.server.tasks.RegistrationTask;
-import netty.server.tasks.ServerTaskExecutor;
+import netty.server.tasks.*;
 
 
 public class Authenticator extends ChannelInboundHandlerAdapter {
     private static ServerTaskExecutor executor = new ServerTaskExecutor(3, 5, 100);
-    private static final int BAD_ATTEMPTS_THRESHOLD = 3;
 
+    private static final int BAD_ATTEMPTS_THRESHOLD = 3;
     private int badAttempts = 0;
 
     @Override
@@ -30,13 +29,13 @@ public class Authenticator extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     public void channelRead(ChannelHandlerContext context, Object msg) throws Exception {
-        if (msg instanceof AuthRequestPacket) {
-            AuthRequestPacket request = (AuthRequestPacket) msg;
-            executor.execute(new AuthTask(request, context));
-        } else if (msg instanceof RegistrationRequestPacket) {
-            RegistrationRequestPacket request = (RegistrationRequestPacket) msg;
-            executor.execute(new RegistrationTask(request, context));
+        if (msg instanceof AuthRequestPacket || msg instanceof RegistrationRequestPacket) {
+            Packet packet = (Packet) msg;
+            ServerTask task = ServerTaskPool.taskFor(packet);
+            task.setContext(packet, context);
+            executor.execute(task);
         } else {
             badAttempts++;
             Console.println(String.format(

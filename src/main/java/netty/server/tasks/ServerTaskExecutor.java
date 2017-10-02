@@ -4,7 +4,6 @@ import io.netty.channel.Channel;
 import netty.annotations.SingleChannelTask;
 import netty.annotations.SingleTask;
 import netty.Console;
-import netty.server.tasks.ServerTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +34,8 @@ public class ServerTaskExecutor {
             return false;
         }
 
-        Channel taskChannel = task.getContext().channel();
-        Class taskClass = task.getClass();
+        Channel taskChannel = task.getChannel();
+        Class   taskClass   = task.getClass();
 
         if (taskClass.isAnnotationPresent(SingleChannelTask.class)) {
             Console.println("<EXECUTOR> SingleChannelTask DETECT");
@@ -77,7 +76,7 @@ public class ServerTaskExecutor {
         @Override
         protected void afterExecute(Runnable r, Throwable t) {
             ServerTask task = (ServerTask) r;
-            Channel taskChannel = task.getContext().channel();
+            Channel taskChannel = task.getChannel();
             ArrayList channelTaskList = channels.get(taskChannel);
             channelTaskList.remove(task);
             if (channelTaskList.isEmpty())

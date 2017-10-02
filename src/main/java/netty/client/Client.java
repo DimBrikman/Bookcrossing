@@ -13,6 +13,9 @@ import java.io.InputStreamReader;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import netty.Console;
+import netty.client.handlers.InboundHandler;
+import netty.client.handlers.OutboundHandler;
 
 public class Client implements Runnable {
 
@@ -64,7 +67,7 @@ public class Client implements Runnable {
                 cmd = Console.readLine();
             }
         } catch (IOException | InterruptedException e) {
-            Console.println("<ClientMainLoop> ERROR: " + e.getMessage());
+            Console.println("<MAIN LOOP> ERROR: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -72,8 +75,10 @@ public class Client implements Runnable {
     private String menu() {
         return new StringBuilder()
                 .append("\n")
-                .append("(1) - login\n")
-                .append("(2) - message\n")
+                .append("(r) - registration\n")
+                .append("(u) - user login\n")
+                .append("(a) - admin login\n")
+                .append("(m) - message\n")
                 .append("(0) - menu\n")
                 .toString();
     }

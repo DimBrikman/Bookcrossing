@@ -1,18 +1,29 @@
-package netty.client;
+package netty.client.handlers;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import netty.Console;
 import netty.packets.AuthResponsePacket;
 import netty.packets.MessagePacket;
+import netty.packets.RegistrationResponsePacket;
 import netty.packets.RejectionPacket;
 
 public class InboundHandler extends ChannelInboundHandlerAdapter {
+
+    @Override
+    public void channelActive(ChannelHandlerContext context) throws Exception {
+        Console.println("<IN> ACTIVE");
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext context, Object msg) throws Exception {
         if (msg instanceof AuthResponsePacket) {
             AuthResponsePacket response = (AuthResponsePacket) msg;
             String log = response.isSuccess() ? "<IN> AUTH SUCCESS" : "<IN> AUTH FAILED: " + response.getMessage();
+            Console.println(log);
+        } else if (msg instanceof RegistrationResponsePacket) {
+            RegistrationResponsePacket response = (RegistrationResponsePacket) msg;
+            String log = response.isSuccess() ? "<IN> REGISTRATION SUCCESS" : "<IN> REGISTRATION FAILED: " + response.getMessage();
             Console.println(log);
         } else if (msg instanceof MessagePacket) {
             MessagePacket packet = (MessagePacket) msg;

@@ -1,4 +1,4 @@
-package other;
+package test;
 
 
 import netty.packets.AuthRequestPacket;

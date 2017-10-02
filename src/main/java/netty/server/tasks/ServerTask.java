@@ -46,4 +46,12 @@ public abstract class ServerTask implements Runnable {
         ChannelFuture future = reject(reason);
         future.addListener(ChannelFutureListener.CLOSE);
     }
+
+    @Deprecated
+    protected void pause(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ignored) {
+        }
+    }
 }

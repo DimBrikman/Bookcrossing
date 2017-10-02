@@ -1,4 +1,4 @@
-package netty.client;
+package netty;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,10 +13,12 @@ public class Console {
 
     public static void print(String s) {
         System.out.print(s);
+        System.out.flush();
     }
 
     public static void println(String s) {
         System.out.println(s);
+        System.out.flush();
     }
 
     public static void flush() {

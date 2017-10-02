@@ -1,10 +1,10 @@
 package netty.packets;
 
-public class AuthRequestPacket implements Packet {
+public class RegistrationRequestPacket implements Packet {
     private String login;
     private String password;
 
-    public AuthRequestPacket(String login, String password) {
+    public RegistrationRequestPacket(String login, String password) {
         this.login = login;
         this.password = password;
     }

@@ -1,14 +1,13 @@
-package netty.client.requests;
+package netty.client.tasks;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import netty.client.Console;
+import netty.Console;
 import netty.packets.MessagePacket;
 
 import java.io.IOException;
 
-public class ClientMessageRequest extends ClientRequest {
-
+public class ClientMessageTask implements ClientTask {
     @Override
     public void execute(ChannelHandlerContext context, ChannelPromise promise) {
         try {

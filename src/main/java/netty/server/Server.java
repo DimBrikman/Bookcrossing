@@ -10,6 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import netty.Console;
+import netty.server.handlers.Authenticator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,7 +49,7 @@ public class Server implements Runnable {
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture serverFuture = bootstrap.bind("localhost", 8090).sync();
-            System.out.println("SERVER IS RUNNING...");
+            Console.println("SERVER IS RUNNING...");
             while (!reader.readLine().equalsIgnoreCase("exit"));
             serverFuture.channel().close().awaitUninterruptibly();
         } catch (InterruptedException | IOException e) {
@@ -55,7 +57,7 @@ public class Server implements Runnable {
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
-            System.out.println("SERVER TERMINATED");
+            Console.println("SERVER TERMINATED");
         }
     }
 }

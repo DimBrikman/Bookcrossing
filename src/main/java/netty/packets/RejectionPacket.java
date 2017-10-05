@@ -1,16 +1,18 @@
 package netty.packets;
 
-public class RejectionPacket implements Packet {
+public class RejectionPacket extends ResponsePacket {
     private final String message;
 
-    public RejectionPacket() {
-        message = null;
+    public RejectionPacket(RequestPacket request) {
+        this(request, null);
     }
-    public RejectionPacket(String message) {
+
+    public RejectionPacket(RequestPacket request, String message) {
+        super(request);
         this.message = message;
     }
 
-    public String getMessage() {
+    public String message() {
         return message;
     }
 }

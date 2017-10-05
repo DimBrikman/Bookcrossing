@@ -1,6 +1,6 @@
 package netty.packets;
 
-public class RegistrationRequestPacket implements Packet {
+public class RegistrationRequestPacket extends RequestPacket {
     private final String login;
     private final String password;
 

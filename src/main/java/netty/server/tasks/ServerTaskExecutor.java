@@ -11,24 +11,33 @@ import java.util.concurrent.*;
 
 public class ServerTaskExecutor {
     private final CustomThreadPool executor;
+    private String name;
+    
+    private String logPrefix;
 
     /**
      * Stores channels and tasks for this channel, which are currently executed or queued for.
      */
     private volatile ConcurrentHashMap<Channel, ArrayList<ServerTask>> channels;
-
+    
     public ServerTaskExecutor(int corePoolSize, int maxPoolSize, int queueCapacity) {
+        this(corePoolSize, maxPoolSize, queueCapacity, null);
+    }
+
+    public ServerTaskExecutor(int corePoolSize, int maxPoolSize, int queueCapacity, String name) {
         executor = new CustomThreadPool(
                 corePoolSize, maxPoolSize,
                 1, TimeUnit.MINUTES,
                 new ArrayBlockingQueue<>(queueCapacity)
         );
         channels = new ConcurrentHashMap<>();
+        this.name = name;
+        logPrefix = "<EXECUTOR" + (name != null ? ":" + name : "") + "> ";
     }
 
     @SuppressWarnings("unchecked")
     public synchronized boolean execute(ServerTask task) {
-        Console.println("<EXECUTOR> NEW TASK: " + task.getClass().getSimpleName());
+        Console.println(logPrefix + "NEW TASK: " + task.getClass().getSimpleName());
         if (executor.getQueue().remainingCapacity() == 0) {
             task.reject("server is overloaded");
             return false;
@@ -38,23 +47,23 @@ public class ServerTaskExecutor {
         Class   taskClass   = task.getClass();
 
         if (taskClass.isAnnotationPresent(SingleChannelTask.class)) {
-            Console.println("<EXECUTOR> SingleChannelTask DETECT");
+            Console.println(logPrefix + "@SingleChannelTask DETECT: " + taskClass.getSimpleName());
         }
         if (taskClass.isAnnotationPresent(SingleTask.class)) {
-            Console.println("<EXECUTOR> SingleTask DETECT");
+            Console.println(logPrefix + "@SingleTask DETECT: " + taskClass.getSimpleName());
         }
 
         if (channels.containsKey(taskChannel)) {
             if (taskClass.isAnnotationPresent(SingleChannelTask.class)) {
-                task.reject("concurrent request denied (SingleChannelTask rejected)");
-                Console.println("<EXECUTOR> SingleChannelTask REJECTED: " + taskClass.getSimpleName());
+                task.reject("concurrent response denied (SingleChannelTask rejected)");
+                Console.println(logPrefix + "@SingleChannelTask REJECTED: " + taskClass.getSimpleName());
                 return false;
             }
             if (taskClass.isAnnotationPresent(SingleTask.class)) {
                 for (ServerTask t : channels.get(taskChannel)) {
                     if (t.getClass().equals(taskClass)) {
-                        task.reject("concurrent request denied (SingleTask rejected)");
-                        Console.println("<EXECUTOR> SingleTask REJECTED: " + taskClass.getSimpleName());
+                        task.reject("concurrent response denied (SingleTask rejected)");
+                        Console.println(logPrefix + "@SingleTask REJECTED: " + taskClass.getSimpleName());
                         return false;
                     }
                 }
@@ -68,6 +77,10 @@ public class ServerTaskExecutor {
         return true;
     }
 
+    public String getName() {
+        return name;
+    }
+
     private class CustomThreadPool extends ThreadPoolExecutor {
         CustomThreadPool(int core, int max, long time, TimeUnit unit, BlockingQueue<Runnable> queue) {
             super(core, max, time, unit, queue);
@@ -79,6 +92,7 @@ public class ServerTaskExecutor {
             Channel taskChannel = task.getChannel();
             ArrayList channelTaskList = channels.get(taskChannel);
             channelTaskList.remove(task);
+            Console.println(logPrefix + "TASK RELEASED: " + task.getClass().getSimpleName());
             if (channelTaskList.isEmpty())
                 channels.remove(taskChannel);
         }

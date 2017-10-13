@@ -10,7 +10,6 @@ public class ClientTaskPool {
     private static HashMap<Class<? extends Packet>, Class<? extends ClientTask>> taskPool
              = new HashMap<Class<? extends Packet>, Class<? extends ClientTask>>() {{
 
-        put(MessagePacket.class, ClientMessageTask.class);
     }};
 
     public static ClientTask taskFor(Packet packet) {

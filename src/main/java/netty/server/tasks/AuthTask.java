@@ -16,7 +16,7 @@ public class AuthTask extends ServerTask<AuthRequestPacket> {
             Console.println("<AUTH TASK> ALREADY AUTH");
             context.writeAndFlush(new AuthResponsePacket(false, "already authorized", packet));
         } else {
-            if (DatabaseMock.validateUser(packet.getLogin(), packet.getPassword(), 1000)) {
+            if (DatabaseMock.validateUser(packet.getLogin(), packet.getPassword(), 2000)) {
                 Console.println("<AUTH TASK> SUCCESS");
                 ChannelCache cache = new ChannelCache();
                 cache.setUser(DatabaseMock.getUser(packet.getLogin(), 0));

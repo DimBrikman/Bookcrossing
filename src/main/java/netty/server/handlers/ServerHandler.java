@@ -3,6 +3,7 @@ package netty.server.handlers;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import netty.Console;
+import netty.packets.MultiplexedPacket;
 import netty.packets.Packet;
 import netty.packets.RequestPacket;
 import netty.server.tasks.ServerTask;
@@ -18,16 +19,25 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    @SuppressWarnings({"ConstantConditions", "unchecked"})
+    @SuppressWarnings("ConstantConditions")
     public void channelRead(ChannelHandlerContext context, Object msg) throws Exception {
         if (msg instanceof Packet) {
-            Packet packet = (Packet) msg;
-            ServerTask task = ServerTaskPool.taskFor(packet);
-            task.setContext(packet, context);
-            executor.execute(task);
+            if (msg instanceof MultiplexedPacket) {
+                for (Packet packet : ((MultiplexedPacket) msg).packets())
+                    serve(packet, context);
+            } else {
+                serve((Packet) msg, context);
+            }
         } else {
             Console.println("<SERVER> BAD PACKET: " + msg.getClass().getSimpleName());
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void serve(Packet packet, ChannelHandlerContext context) {
+        ServerTask task = ServerTaskPool.taskFor(packet);
+        task.setContext(packet, context);
+        executor.execute(task);
     }
 
     @Override

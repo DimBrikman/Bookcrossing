@@ -12,6 +12,7 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import netty.Console;
 import netty.server.handlers.Authenticator;
+import netty.server.handlers.Initializer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,8 +28,6 @@ public class Server implements Runnable {
 
     @Override
     public void run() {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
         NioEventLoopGroup bossGroup   = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -36,23 +35,14 @@ public class Server implements Runnable {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel channel) throws Exception {
-                            channel.pipeline()
-                                    .addLast(new ObjectEncoder())
-                                    .addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)))
-                                    .addLast("AuthHandler", new Authenticator());
-                        }
-                    })
+                    .childHandler(new Initializer())
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture serverFuture = bootstrap.bind("localhost", 8090).sync();
             Console.println("SERVER IS RUNNING...");
-            while (!reader.readLine().equalsIgnoreCase("exit"));
-            serverFuture.channel().close().awaitUninterruptibly();
-        } catch (InterruptedException | IOException e) {
+            serverFuture.channel().closeFuture().sync();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             workerGroup.shutdownGracefully();

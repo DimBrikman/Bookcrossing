@@ -1,6 +1,7 @@
 package netty.client.futures;
 
-public interface ResponseFutureListener<T> {
+import netty.packets.ResponsePacket;
+
+public interface ResponseFutureListener<T extends ResponsePacket> {
     void accepted(ResponseFuture<T> future);
-    void cancelled();
 }
